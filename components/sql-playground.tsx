@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Play, X, Wand2 } from "lucide-react"
+import { Play, X, Wand2, CheckCircle, XCircle } from "lucide-react"
 import dynamic from "next/dynamic"
 
 // Dynamically import Monaco Editor to avoid SSR issues
@@ -18,9 +18,16 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
 
 interface SQLPlaygroundProps {
   starterCode: string
+  onCodeChange?: (code: string) => void
+  onRunQuery?: () => void
+  validationResult?: {
+    is_correct: boolean
+    expected_output: any[]
+    user_output: any[]
+  }
 }
 
-export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
+export function SQLPlayground({ starterCode, onCodeChange, onRunQuery, validationResult }: SQLPlaygroundProps) {
   const [code, setCode] = useState(starterCode)
   const [results, setResults] = useState<any[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -28,7 +35,26 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
   const [showResults, setShowResults] = useState(false)
   const [fontSize, setFontSize] = useState(14)
 
+  // Update code when starterCode prop changes
+  useEffect(() => {
+    setCode(starterCode)
+  }, [starterCode])
+
+  // Update results when validationResult changes
+  useEffect(() => {
+    if (validationResult) {
+      setResults(validationResult.user_output)
+      setError(null)
+      setShowResults(true)
+    }
+  }, [validationResult])
+
   const handleRunQuery = async () => {
+    if (onRunQuery) {
+      onRunQuery()
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     setResults(null)
@@ -255,7 +281,12 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
           language="sql"
           theme="vs-dark"
           value={code}
-          onChange={(value) => setCode(value || "")}
+          onChange={(value) => {
+            setCode(value || "")
+            if (onCodeChange) {
+              onCodeChange(value || "")
+            }
+          }}
           onMount={handleEditorDidMount}
           options={{
             minimap: { enabled: false },
@@ -297,9 +328,27 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
               <div className="text-[#ef4444] font-mono text-sm">{error}</div>
             ) : results ? (
               <div className="space-y-2">
-                <div className="text-sm text-[#22c55e]">
-                  Query executed successfully. {results.length} row(s) returned.
-                </div>
+                {validationResult ? (
+                  <div className="space-y-3">
+                    <div className={`text-sm flex items-center gap-2 ${
+                      validationResult.is_correct ? 'text-[#22c55e]' : 'text-[#ef4444]'
+                    }`}>
+                      {validationResult.is_correct ? (
+                        <CheckCircle className="h-4 w-4" />
+                      ) : (
+                        <XCircle className="h-4 w-4" />
+                      )}
+                      {validationResult.is_correct ? 'Correct! Your query matches the expected output.' : 'Incorrect. Your query does not match the expected output.'}
+                    </div>
+                    <div className="text-sm text-[#d4d4d4]">
+                      Your query returned {results.length} row(s).
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-sm text-[#22c55e]">
+                    Query executed successfully. {results.length} row(s) returned.
+                  </div>
+                )}
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
                     <thead>

@@ -30,12 +30,12 @@ export default function StudentDashboard() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Link href="/student/test">
+            <Link href="/student/tests">
               <Button
                 size="lg"
                 className="bg-[#2563eb] hover:bg-[#3b82f6] text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl min-w-[250px]"
               >
-                View Test
+                View Tests
               </Button>
             </Link>
 

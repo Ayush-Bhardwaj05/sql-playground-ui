@@ -44,10 +44,47 @@ export default function CreateTest() {
     setColumns(columns.map((col) => (col.id === id ? { ...col, [field]: value } : col)))
   }
 
-  const handleCreateTest = () => {
-    // Placeholder for backend integration
-    alert("Test created successfully! (Backend integration pending)")
+  const handleCreateTest = async () => {
+  try {
+    // 1. Build schema string
+    const columnDefs = columns.map(col => {
+      let def = `${col.name} ${col.dataType}`;
+      if (!col.nullable) def += " NOT NULL";
+      if (col.primaryKey) def += " PRIMARY KEY";
+      return def;
+    });
+    const schema = `CREATE TABLE ${tableName} (\n  ${columnDefs.join(",\n  ")}\n);`;
+
+    // 2. Prepare payload
+    const payload = {
+      test_name: testTitle,
+      description: testDescription,
+      schema,
+      num_questions: 5 // or make this configurable
+    };
+
+    // 3. Call backend
+    const res = await fetch("http://localhost:8000/schema/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.detail || "Failed to create test");
+    }
+
+    const data = await res.json();
+    alert(`✅ Test created! Test ID: ${data.test_id}, Table: ${data.table_name}`);
+
+  } catch (err: any) {
+    alert(`❌ Error: ${err.message}`);
   }
+};
+
 
   return (
     <div className="min-h-screen bg-black flex flex-col px-4">
