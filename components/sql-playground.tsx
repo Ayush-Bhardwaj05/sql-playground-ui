@@ -209,25 +209,31 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
   }
 
   return (
-    <div className="h-full flex flex-col relative bg-gray-900">
-      <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800">
+    <div className="h-full flex flex-col relative">
+      <div className="flex items-center justify-between p-4 border-b border-[#2d2d2d] bg-[#1e1e1e]">
         <h2 className="text-lg font-semibold text-white">Code</h2>
         <div className="flex items-center gap-3">
           <Select value={fontSize.toString()} onValueChange={handleFontSizeChange}>
-            <SelectTrigger className="w-20 bg-gray-700 border-gray-600 text-white">
+            <SelectTrigger className="w-20 bg-[#2d2d2d] border-[#2d2d2d] text-[#d4d4d4] hover:bg-[#3d3d3d]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="12">12px</SelectItem>
-              <SelectItem value="16">16px</SelectItem>
-              <SelectItem value="20">20px</SelectItem>
+            <SelectContent className="bg-[#2d2d2d] border-[#2d2d2d]">
+              <SelectItem value="12" className="text-[#d4d4d4] hover:bg-[#3d3d3d]">
+                12px
+              </SelectItem>
+              <SelectItem value="16" className="text-[#d4d4d4] hover:bg-[#3d3d3d]">
+                16px
+              </SelectItem>
+              <SelectItem value="20" className="text-[#d4d4d4] hover:bg-[#3d3d3d]">
+                20px
+              </SelectItem>
             </SelectContent>
           </Select>
           <Button
             onClick={handleBeautifyCode}
             variant="outline"
             size="sm"
-            className="gap-2 bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+            className="gap-2 bg-[#2d2d2d] border-[#2d2d2d] text-[#d4d4d4] hover:bg-[#3d3d3d]"
           >
             <Wand2 className="h-4 w-4" />
             Format
@@ -235,7 +241,7 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
           <Button
             onClick={handleRunQuery}
             disabled={isLoading}
-            className="gap-2 glass-button text-white border-0 hover:glass-button"
+            className="gap-2 bg-[#2563eb] hover:bg-[#3b82f6] text-white border-0"
           >
             <Play className="h-4 w-4" />
             {isLoading ? "Running..." : "Run"}
@@ -243,7 +249,7 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-900">
+      <div className="flex-1 bg-[#1e1e1e]">
         <MonacoEditor
           height="100%"
           language="sql"
@@ -268,14 +274,14 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
       </div>
 
       {showResults && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 shadow-lg max-h-80 flex flex-col">
-          <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-900">
+        <div className="absolute bottom-0 left-0 right-0 bg-black border-t border-[#2d2d2d] shadow-lg max-h-80 flex flex-col">
+          <div className="flex items-center justify-between p-3 border-b border-[#2d2d2d] bg-[#1e1e1e]">
             <h3 className="font-semibold text-sm text-white">Console</h3>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowResults(false)}
-              className="h-6 w-6 p-0 text-gray-400 hover:text-white"
+              className="h-6 w-6 p-0 text-[#d4d4d4] hover:text-white hover:bg-[#2d2d2d]"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -283,21 +289,21 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
 
           <div className="flex-1 overflow-auto p-4">
             {isLoading ? (
-              <div className="flex items-center gap-2 text-gray-400">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+              <div className="flex items-center gap-2 text-[#d4d4d4]">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#2563eb]"></div>
                 Running query...
               </div>
             ) : error ? (
-              <div className="text-red-400 font-mono text-sm">{error}</div>
+              <div className="text-[#ef4444] font-mono text-sm">{error}</div>
             ) : results ? (
               <div className="space-y-2">
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-[#22c55e]">
                   Query executed successfully. {results.length} row(s) returned.
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-700">
+                      <tr className="border-b border-[#2d2d2d]">
                         {results.length > 0 &&
                           Object.keys(results[0]).map((key) => (
                             <th key={key} className="text-left p-2 font-semibold text-white">
@@ -308,9 +314,9 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
                     </thead>
                     <tbody>
                       {results.map((row, index) => (
-                        <tr key={index} className="border-b border-gray-700">
+                        <tr key={index} className="border-b border-[#2d2d2d]">
                           {Object.values(row).map((value, i) => (
-                            <td key={i} className="p-2 text-gray-300">
+                            <td key={i} className="p-2 text-[#d4d4d4]">
                               {String(value)}
                             </td>
                           ))}
