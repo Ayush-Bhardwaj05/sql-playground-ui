@@ -1,0 +1,17 @@
+{
+  "id": "q1",
+  "title": "Students with marks > 80",
+  "difficulty": "Easy",
+  "description": "Return names of students with marks greater than 80.",
+  "schema": [{ "table": "students", "cols": ["id INT", "name TEXT", "marks INT"] }],
+  "sampleData": {
+    "students": [
+      { "id": 1, "name": "John", "marks": 85 },
+      { "id": 2, "name": "Alex", "marks": 70 },
+      { "id": 3, "name": "Sarah", "marks": 92 },
+      { "id": 4, "name": "Mike", "marks": 78 }
+    ]
+  },
+  "examples": [{ "input": "students table above", "output": [{ "name": "John" }, { "name": "Sarah" }] }],
+  "starterCode": "SELECT name FROM students WHERE marks > 80;"
+}
