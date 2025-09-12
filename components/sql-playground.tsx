@@ -2,15 +2,16 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Play, X } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Play, X, Wand2 } from "lucide-react"
 import dynamic from "next/dynamic"
 
 // Dynamically import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
-    <div className="h-96 bg-muted rounded flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div className="h-96 bg-gray-800 rounded flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
     </div>
   ),
 })
@@ -25,6 +26,7 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [fontSize, setFontSize] = useState(14)
 
   const handleRunQuery = async () => {
     setIsLoading(true)
@@ -56,6 +58,30 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
     }
 
     setIsLoading(false)
+  }
+
+  const handleFontSizeChange = (value: string) => {
+    const size = Number.parseInt(value)
+    setFontSize(size)
+  }
+
+  const handleBeautifyCode = () => {
+    const beautified = code
+      .replace(/\s+/g, " ")
+      .replace(/\s*,\s*/g, ",\n  ")
+      .replace(/\bSELECT\b/gi, "SELECT")
+      .replace(/\bFROM\b/gi, "\nFROM")
+      .replace(/\bWHERE\b/gi, "\nWHERE")
+      .replace(/\bORDER BY\b/gi, "\nORDER BY")
+      .replace(/\bGROUP BY\b/gi, "\nGROUP BY")
+      .replace(/\bHAVING\b/gi, "\nHAVING")
+      .replace(/\bJOIN\b/gi, "\nJOIN")
+      .replace(/\bLEFT JOIN\b/gi, "\nLEFT JOIN")
+      .replace(/\bRIGHT JOIN\b/gi, "\nRIGHT JOIN")
+      .replace(/\bINNER JOIN\b/gi, "\nINNER JOIN")
+      .trim()
+
+    setCode(beautified)
   }
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
@@ -183,16 +209,41 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
   }
 
   return (
-    <div className="h-full flex flex-col relative">
-      <div className="flex items-center justify-between p-4 border-b bg-card">
-        <h2 className="text-lg font-semibold">Code</h2>
-        <Button onClick={handleRunQuery} disabled={isLoading} className="gap-2 bg-primary hover:bg-primary/90">
-          <Play className="h-4 w-4" />
-          {isLoading ? "Running..." : "Run"}
-        </Button>
+    <div className="h-full flex flex-col relative bg-gray-900">
+      <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800">
+        <h2 className="text-lg font-semibold text-white">Code</h2>
+        <div className="flex items-center gap-3">
+          <Select value={fontSize.toString()} onValueChange={handleFontSizeChange}>
+            <SelectTrigger className="w-20 bg-gray-700 border-gray-600 text-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gray-600">
+              <SelectItem value="12">12px</SelectItem>
+              <SelectItem value="16">16px</SelectItem>
+              <SelectItem value="20">20px</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={handleBeautifyCode}
+            variant="outline"
+            size="sm"
+            className="gap-2 bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+          >
+            <Wand2 className="h-4 w-4" />
+            Format
+          </Button>
+          <Button
+            onClick={handleRunQuery}
+            disabled={isLoading}
+            className="gap-2 glass-button text-white border-0 hover:glass-button"
+          >
+            <Play className="h-4 w-4" />
+            {isLoading ? "Running..." : "Run"}
+          </Button>
+        </div>
       </div>
 
-      <div className="flex-1 bg-card">
+      <div className="flex-1 bg-gray-900">
         <MonacoEditor
           height="100%"
           language="sql"
@@ -202,7 +253,7 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
           onMount={handleEditorDidMount}
           options={{
             minimap: { enabled: false },
-            fontSize: 14,
+            fontSize: fontSize,
             lineNumbers: "on",
             roundedSelection: false,
             scrollBeyondLastLine: false,
@@ -217,34 +268,39 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
       </div>
 
       {showResults && (
-        <div className="absolute bottom-0 left-0 right-0 bg-card border-t shadow-lg max-h-80 flex flex-col">
-          <div className="flex items-center justify-between p-3 border-b bg-muted/50">
-            <h3 className="font-semibold text-sm">Console</h3>
-            <Button variant="ghost" size="sm" onClick={() => setShowResults(false)} className="h-6 w-6 p-0">
+        <div className="absolute bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 shadow-lg max-h-80 flex flex-col">
+          <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-900">
+            <h3 className="font-semibold text-sm text-white">Console</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowResults(false)}
+              className="h-6 w-6 p-0 text-gray-400 hover:text-white"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           <div className="flex-1 overflow-auto p-4">
             {isLoading ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              <div className="flex items-center gap-2 text-gray-400">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
                 Running query...
               </div>
             ) : error ? (
-              <div className="text-red-500 font-mono text-sm">{error}</div>
+              <div className="text-red-400 font-mono text-sm">{error}</div>
             ) : results ? (
               <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-400">
                   Query executed successfully. {results.length} row(s) returned.
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
                     <thead>
-                      <tr className="border-b">
+                      <tr className="border-b border-gray-700">
                         {results.length > 0 &&
                           Object.keys(results[0]).map((key) => (
-                            <th key={key} className="text-left p-2 font-semibold">
+                            <th key={key} className="text-left p-2 font-semibold text-white">
                               {key}
                             </th>
                           ))}
@@ -252,9 +308,9 @@ export function SQLPlayground({ starterCode }: SQLPlaygroundProps) {
                     </thead>
                     <tbody>
                       {results.map((row, index) => (
-                        <tr key={index} className="border-b">
+                        <tr key={index} className="border-b border-gray-700">
                           {Object.values(row).map((value, i) => (
-                            <td key={i} className="p-2">
+                            <td key={i} className="p-2 text-gray-300">
                               {String(value)}
                             </td>
                           ))}
