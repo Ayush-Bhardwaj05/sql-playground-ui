@@ -64,7 +64,7 @@ export default function CreateTest() {
     };
 
     // 3. Call backend
-    const res = await fetch("http://localhost:8000/schema/upload", {
+    const res = await fetch("https://aps-backend-j6mc.onrender.com/schema/upload", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

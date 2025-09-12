@@ -54,7 +54,7 @@ export default function TestPage({ params }: { params: Promise<{ testId: string 
   const fetchTestData = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:8000/schema/tests/${testId}/questions`)
+      const response = await fetch(`https://aps-backend-j6mc.onrender.com/schema/tests/${testId}/questions`)
       if (!response.ok) {
         throw new Error('Failed to fetch test data')
       }
@@ -76,7 +76,7 @@ export default function TestPage({ params }: { params: Promise<{ testId: string 
 
   const handleValidateAnswer = async (questionId: number, userSql: string) => {
   try {
-    const response = await fetch("http://localhost:8000/schema/validate", {
+    const response = await fetch("https://aps-backend-j6mc.onrender.com/schema/validate", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

@@ -26,7 +26,7 @@ export default function TestsPage() {
   const fetchTests = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:8000/schema/tests')
+      const response = await fetch('https://aps-backend-j6mc.onrender.com/schema/tests')
       if (!response.ok) {
         throw new Error('Failed to fetch tests')
       }
