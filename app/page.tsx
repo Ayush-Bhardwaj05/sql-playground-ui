@@ -1,22 +1,39 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4">
-      <div className="text-center space-y-8 max-w-2xl">
-        <div className="space-y-4">
-          <h1 className="text-5xl font-bold text-white mb-4">AI-Powered SQL Testing Platform</h1>
-          <p className="text-xl text-[#d4d4d4] leading-relaxed">
-            Master SQL skills with intelligent testing and real-time feedback
-          </p>
+      <div className="text-center space-y-12 max-w-2xl">
+        {/* Logo */}
+        <div className="mb-8">
+          <Image
+            src="/images/sql-ai-hero.png"
+            alt="SQL Playground Logo"
+            width={200}
+            height={160}
+            className="mx-auto rounded-xl"
+            priority
+          />
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mt-12">
+        {/* Platform Name */}
+        <h1 className="text-5xl font-bold text-white mb-4">
+          <span className="text-white">SQL</span> <span className="text-blue-400">Playground</span>
+        </h1>
+
+        {/* Tagline */}
+        <p className="text-xl text-gray-300 mb-12">AI-Powered SQL Testing Platform</p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <Link href="/student">
             <Button
               size="lg"
-              className="bg-[#2563eb] hover:bg-[#3b82f6] text-white px-12 py-6 text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl min-w-[200px]"
+              className="bg-blue-600/80 hover:bg-blue-600/90 text-white px-12 py-6 text-xl font-semibold rounded-xl transition-all duration-200 min-w-[200px] border border-blue-500/50"
             >
               Student
             </Button>
@@ -25,37 +42,11 @@ export default function Home() {
           <Link href="/teacher">
             <Button
               size="lg"
-              className="bg-[#2563eb] hover:bg-[#3b82f6] text-white px-12 py-6 text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl min-w-[200px]"
+              className="bg-purple-600/80 hover:bg-purple-600/90 text-white px-12 py-6 text-xl font-semibold rounded-xl transition-all duration-200 min-w-[200px] border border-purple-500/50"
             >
               Teacher
             </Button>
           </Link>
-        </div>
-
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="space-y-2">
-            <div className="w-12 h-12 bg-[#2563eb] rounded-lg mx-auto flex items-center justify-center">
-              <span className="text-white font-bold text-xl">AI</span>
-            </div>
-            <h3 className="text-white font-semibold">AI-Powered</h3>
-            <p className="text-[#d4d4d4] text-sm">Intelligent feedback and suggestions</p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="w-12 h-12 bg-[#2563eb] rounded-lg mx-auto flex items-center justify-center">
-              <span className="text-white font-bold text-xl">⚡</span>
-            </div>
-            <h3 className="text-white font-semibold">Real-time Testing</h3>
-            <p className="text-[#d4d4d4] text-sm">Instant query execution and results</p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="w-12 h-12 bg-[#2563eb] rounded-lg mx-auto flex items-center justify-center">
-              <span className="text-white font-bold text-xl">📊</span>
-            </div>
-            <h3 className="text-white font-semibold">Progress Tracking</h3>
-            <p className="text-[#d4d4d4] text-sm">Detailed analytics and insights</p>
-          </div>
         </div>
       </div>
     </div>

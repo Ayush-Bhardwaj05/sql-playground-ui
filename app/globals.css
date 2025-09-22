@@ -125,3 +125,93 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  .glass-morphism-dark {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5), 0 0 40px rgba(37, 99, 235, 0.3), 0 0 60px rgba(37, 99, 235, 0.1);
+  }
+
+  .neon-glow-hover:hover {
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.7), 0 0 60px rgba(37, 99, 235, 0.5), 0 0 90px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cyber-grid {
+    background-image: linear-gradient(rgba(37, 99, 235, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes pulse-glow {
+    from {
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    }
+    to {
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.8), 0 0 40px rgba(37, 99, 235, 0.6);
+    }
+  }
+
+  .holographic {
+    background: linear-gradient(
+      45deg,
+      rgba(37, 99, 235, 0.1) 0%,
+      rgba(59, 130, 246, 0.1) 25%,
+      rgba(147, 51, 234, 0.1) 50%,
+      rgba(59, 130, 246, 0.1) 75%,
+      rgba(37, 99, 235, 0.1) 100%
+    );
+    background-size: 400% 400%;
+    animation: holographic-shift 4s ease infinite;
+  }
+
+  @keyframes holographic-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
