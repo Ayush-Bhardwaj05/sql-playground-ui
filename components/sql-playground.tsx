@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, memo } from "react"
+import { useState, useEffect, useCallback, memo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Play, Wand2 } from "lucide-react"
@@ -22,22 +22,35 @@ export const SQLPlayground = memo(function SQLPlayground({
   const [code, setCode] = useState(starterCode)
   const [isLoading, setIsLoading] = useState(false)
   const [fontSize, setFontSize] = useState("16")
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setCode(starterCode)
   }, [starterCode])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleCodeChange = useCallback(
     (value: string | undefined) => {
       const newCode = value || ""
       setCode(newCode)
 
-      // Debounce the callback to reduce unnecessary updates
-      const timeoutId = setTimeout(() => {
+      // Clear previous timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+      }
+
+      // Set new timeout for debounced callback
+      debounceTimeoutRef.current = setTimeout(() => {
         onCodeChange?.(newCode)
       }, 300)
-
-      return () => clearTimeout(timeoutId)
     },
     [onCodeChange],
   )
@@ -46,12 +59,14 @@ export const SQLPlayground = memo(function SQLPlayground({
     if (!onRunQuery) return
 
     setIsLoading(true)
-    onRunQuery(code)
-
-    // Reset loading state after a delay
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
+    try {
+      onRunQuery(code)
+    } finally {
+      // Reset loading state after a shorter delay
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
+    }
   }, [onRunQuery, code])
 
   const handleFontSizeChange = useCallback((value: string) => {
@@ -67,6 +82,8 @@ export const SQLPlayground = memo(function SQLPlayground({
       .replace(/\bJOIN\b/gi, "\nJOIN")
       .replace(/\bGROUP BY\b/gi, "\nGROUP BY")
       .replace(/\bORDER BY\b/gi, "\nORDER BY")
+      .replace(/\bHAVING\b/gi, "\nHAVING")
+      .replace(/\bLIMIT\b/gi, "\nLIMIT")
       .trim()
 
     setCode(beautified)
@@ -106,7 +123,7 @@ export const SQLPlayground = memo(function SQLPlayground({
           <Button
             onClick={handleRunQuery}
             disabled={isLoading || !onRunQuery}
-            className="gap-2 bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all duration-200 hover:scale-105 active:scale-95"
+            className="gap-2 bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all duration-200"
           >
             <Play className={`h-4 w-4 ${isLoading ? "animate-pulse" : ""}`} />
             {isLoading ? "Running..." : "Run Query"}

@@ -11,238 +11,47 @@ import { PerformanceMonitor } from "@/components/performance-monitor"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 
-const dummyQuestions = [
-  {
-    id: 1,
-    difficulty: "Easy",
-    marks: 10,
-    title: "Basic SELECT Query",
-    description: "Write a SQL query to select all columns from the 'students' table.",
-    schema: {
-      tables: [
-        {
-          name: "students",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "age", type: "INT", constraints: "" },
-            { name: "marks", type: "DECIMAL(5,2)", constraints: "" },
-            { name: "course_id", type: "INT", constraints: "FOREIGN KEY" },
-          ],
-        },
-      ],
-    },
-    sampleData: {
-      students: [
-        { id: 1, name: "Alice Johnson", age: 20, marks: 85.5, course_id: 1 },
-        { id: 2, name: "Bob Smith", age: 21, marks: 92.0, course_id: 2 },
-        { id: 3, name: "Carol Davis", age: 19, marks: 78.5, course_id: 1 },
-        { id: 4, name: "David Wilson", age: 22, marks: 88.0, course_id: 3 },
-      ],
-    },
-    inputFormat: "No input parameters required",
-    outputFormat: "All columns: id, name, age, marks, course_id",
-    expectedOutput: [
-      { id: 1, name: "Alice Johnson", age: 20, marks: 85.5, course_id: 1 },
-      { id: 2, name: "Bob Smith", age: 21, marks: 92.0, course_id: 2 },
-      { id: 3, name: "Carol Davis", age: 19, marks: 78.5, course_id: 1 },
-      { id: 4, name: "David Wilson", age: 22, marks: 88.0, course_id: 3 },
-    ],
-    starterCode: "-- Write your SQL query here\nSELECT ",
-    hint: "Use SELECT * FROM table_name",
-  },
-  {
-    id: 2,
-    difficulty: "Easy",
-    marks: 10,
-    title: "Filtering with WHERE",
-    description: "Write a SQL query to select students with marks greater than 80.",
-    schema: {
-      tables: [
-        {
-          name: "students",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "age", type: "INT", constraints: "" },
-            { name: "marks", type: "DECIMAL(5,2)", constraints: "" },
-            { name: "course_id", type: "INT", constraints: "FOREIGN KEY" },
-          ],
-        },
-      ],
-    },
-    sampleData: {
-      students: [
-        { id: 1, name: "Alice Johnson", age: 20, marks: 85.5, course_id: 1 },
-        { id: 2, name: "Bob Smith", age: 21, marks: 92.0, course_id: 2 },
-        { id: 3, name: "Carol Davis", age: 19, marks: 78.5, course_id: 1 },
-        { id: 4, name: "David Wilson", age: 22, marks: 88.0, course_id: 3 },
-      ],
-    },
-    inputFormat: "Filter condition: marks > 80",
-    outputFormat: "Students with marks greater than 80",
-    expectedOutput: [
-      { id: 1, name: "Alice Johnson", age: 20, marks: 85.5, course_id: 1 },
-      { id: 2, name: "Bob Smith", age: 21, marks: 92.0, course_id: 2 },
-      { id: 4, name: "David Wilson", age: 22, marks: 88.0, course_id: 3 },
-    ],
-    starterCode: "-- Write your SQL query here\nSELECT * FROM students\nWHERE ",
-    hint: "Use WHERE column_name > value",
-  },
-  {
-    id: 3,
-    difficulty: "Medium",
-    marks: 30,
-    title: "JOIN Operations",
-    description: "Write a SQL query to join students and courses tables to show student names with their course names.",
-    schema: {
-      tables: [
-        {
-          name: "students",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "course_id", type: "INT", constraints: "FOREIGN KEY REFERENCES courses(id)" },
-          ],
-        },
-        {
-          name: "courses",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "course_name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "credits", type: "INT", constraints: "" },
-          ],
-        },
-      ],
-    },
-    sampleData: {
-      students: [
-        { id: 1, name: "Alice Johnson", course_id: 1 },
-        { id: 2, name: "Bob Smith", course_id: 2 },
-        { id: 3, name: "Carol Davis", course_id: 1 },
-        { id: 4, name: "David Wilson", course_id: 3 },
-      ],
-      courses: [
-        { id: 1, course_name: "Computer Science", credits: 4 },
-        { id: 2, course_name: "Mathematics", credits: 3 },
-        { id: 3, course_name: "Physics", credits: 4 },
-      ],
-    },
-    inputFormat: "Join students and courses tables",
-    outputFormat: "student_name, course_name",
-    expectedOutput: [
-      { name: "Alice Johnson", course_name: "Computer Science" },
-      { name: "Bob Smith", course_name: "Mathematics" },
-      { name: "Carol Davis", course_name: "Computer Science" },
-      { name: "David Wilson", course_name: "Physics" },
-    ],
-    starterCode: "-- Write your SQL query here\nSELECT s.name, c.course_name\nFROM students s\n",
-    hint: "Use JOIN to combine tables on matching foreign key",
-  },
-  {
-    id: 4,
-    difficulty: "Hard",
-    marks: 50,
-    title: "Complex Aggregation",
-    description:
-      "Write a SQL query to find the average marks for each course, showing only courses with average marks above 75.",
-    schema: {
-      tables: [
-        {
-          name: "students",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "marks", type: "DECIMAL(5,2)", constraints: "" },
-            { name: "course_id", type: "INT", constraints: "FOREIGN KEY" },
-          ],
-        },
-        {
-          name: "courses",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "course_name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-          ],
-        },
-      ],
-    },
-    sampleData: {
-      students: [
-        { id: 1, name: "Alice Johnson", marks: 85.5, course_id: 1 },
-        { id: 2, name: "Bob Smith", marks: 92.0, course_id: 2 },
-        { id: 3, name: "Carol Davis", marks: 78.5, course_id: 1 },
-        { id: 4, name: "David Wilson", marks: 88.0, course_id: 3 },
-        { id: 5, name: "Eve Brown", marks: 95.0, course_id: 2 },
-        { id: 6, name: "Frank Miller", marks: 72.0, course_id: 3 },
-      ],
-      courses: [
-        { id: 1, course_name: "Computer Science" },
-        { id: 2, course_name: "Mathematics" },
-        { id: 3, course_name: "Physics" },
-      ],
-    },
-    inputFormat: "Group by course, filter average > 75",
-    outputFormat: "course_name, average_marks",
-    expectedOutput: [
-      { course_name: "Computer Science", average_marks: 82.0 },
-      { course_name: "Mathematics", average_marks: 93.5 },
-    ],
-    starterCode: "-- Write your SQL query here\nSELECT \n",
-    hint: "Use GROUP BY, HAVING, and AVG functions",
-  },
-  {
-    id: 5,
-    difficulty: "Hard",
-    marks: 50,
-    title: "Subquery Challenge",
-    description:
-      "Write a SQL query to find students who scored higher than the average marks of their respective courses.",
-    schema: {
-      tables: [
-        {
-          name: "students",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-            { name: "marks", type: "DECIMAL(5,2)", constraints: "" },
-            { name: "course_id", type: "INT", constraints: "FOREIGN KEY" },
-          ],
-        },
-        {
-          name: "courses",
-          columns: [
-            { name: "id", type: "INT", constraints: "PRIMARY KEY" },
-            { name: "course_name", type: "VARCHAR(100)", constraints: "NOT NULL" },
-          ],
-        },
-      ],
-    },
-    sampleData: {
-      students: [
-        { id: 1, name: "Alice Johnson", marks: 85.5, course_id: 1 },
-        { id: 2, name: "Bob Smith", marks: 92.0, course_id: 2 },
-        { id: 3, name: "Carol Davis", marks: 78.5, course_id: 1 },
-        { id: 4, name: "David Wilson", marks: 88.0, course_id: 3 },
-        { id: 5, name: "Eve Brown", marks: 95.0, course_id: 2 },
-        { id: 6, name: "Frank Miller", marks: 72.0, course_id: 3 },
-      ],
-      courses: [
-        { id: 1, course_name: "Computer Science" },
-        { id: 2, course_name: "Mathematics" },
-        { id: 3, course_name: "Physics" },
-      ],
-    },
-    inputFormat: "Compare student marks with course average",
-    outputFormat: "Students above their course average",
-    expectedOutput: [
-      { name: "Alice Johnson", marks: 85.5, course_name: "Computer Science" },
-      { name: "Eve Brown", marks: 95.0, course_name: "Mathematics" },
-      { name: "David Wilson", marks: 88.0, course_name: "Physics" },
-    ],
-    starterCode: "-- Write your SQL query here\nSELECT \n",
-    hint: "Use subqueries with comparison operators",
-  },
-]
+// Types based on your API response
+interface TableSchema {
+  column_name: string
+  data_type: string
+}
+
+interface TestData {
+  id: number
+  name: string
+  table_name: string
+  schema_sql: string
+  table_schema: TableSchema[]
+  top_rows: any[]
+}
+
+interface Question {
+  id: number
+  question_text: string
+  difficulty: "easy" | "medium" | "hard"
+  expected_sql: string
+}
+
+interface ApiResponse {
+  test: TestData
+  questions: Question[]
+}
+
+interface ValidationResponse {
+  is_correct: boolean
+  expected_output: any[][]
+  user_output: any[][]
+}
+
+interface SubmissionResponse {
+  message: string
+  submission_id?: number
+  status: "created" | "duplicate"
+}
+
+// Get backend URL from environment variable
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'
 
 export default function QuizTestPage() {
   const router = useRouter()
@@ -250,15 +59,50 @@ export default function QuizTestPage() {
   const quizId = Number.parseInt(params.id as string)
 
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<string[]>(new Array(5).fill(""))
+  const [answers, setAnswers] = useState<string[]>([])
   const [studentDetails, setStudentDetails] = useState<any>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showSubmitModal, setShowSubmitModal] = useState(false)
-  const [queryAttempts, setQueryAttempts] = useState<number[]>(new Array(5).fill(0))
-  const [questionScores, setQuestionScores] = useState<number[]>(new Array(5).fill(0))
+  const [queryAttempts, setQueryAttempts] = useState<number[]>([])
+  const [questionScores, setQuestionScores] = useState<number[]>([])
   const [showResults, setShowResults] = useState(false)
   const [queryResults, setQueryResults] = useState<any>(null)
+  const [testData, setTestData] = useState<ApiResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [startTime] = useState(Date.now())
+
+  // Fetch test data from backend
+  useEffect(() => {
+    const fetchTestData = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${BACKEND_URL}/schema/tests/${quizId}/questions`)
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch test data: ${response.status}`)
+        }
+        
+        const data: ApiResponse = await response.json()
+        setTestData(data)
+        
+        // Initialize state arrays based on number of questions
+        const questionCount = data.questions.length
+        setAnswers(new Array(questionCount).fill(""))
+        setQueryAttempts(new Array(questionCount).fill(0))
+        setQuestionScores(new Array(questionCount).fill(0))
+        
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load test')
+        console.error('Error fetching test data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTestData()
+  }, [quizId])
 
   useEffect(() => {
     const details = sessionStorage.getItem("studentDetails")
@@ -270,6 +114,13 @@ export default function QuizTestPage() {
     setStudentDetails(JSON.parse(details))
     setIsVisible(true)
   }, [quizId, router])
+
+  // Track quiz start time
+  useEffect(() => {
+    if (studentDetails && testData && !sessionStorage.getItem(`quiz_start_time_${quizId}`)) {
+      sessionStorage.setItem(`quiz_start_time_${quizId}`, Date.now().toString())
+    }
+  }, [studentDetails, testData, quizId])
 
   const handleAnswerChange = useCallback(
     (code: string) => {
@@ -283,14 +134,14 @@ export default function QuizTestPage() {
   )
 
   const handleNext = useCallback(() => {
-    if (currentQuestion < dummyQuestions.length - 1) {
+    if (testData && currentQuestion < testData.questions.length - 1) {
       setIsTransitioning(true)
       setTimeout(() => {
         setCurrentQuestion(currentQuestion + 1)
         setIsTransitioning(false)
       }, 200)
     }
-  }, [currentQuestion])
+  }, [currentQuestion, testData])
 
   const handlePrevious = useCallback(() => {
     if (currentQuestion > 0) {
@@ -306,91 +157,334 @@ export default function QuizTestPage() {
     setShowSubmitModal(true)
   }, [])
 
-  const confirmSubmit = useCallback(() => {
+  const confirmSubmit = useCallback(async () => {
+    if (!testData) return
+
     const totalScore = questionScores.reduce((sum, score) => sum + score, 0)
-    const maxPossibleScore = dummyQuestions.reduce((sum, q) => sum + q.marks, 0)
+    const maxPossibleScore = testData.questions.reduce((sum, q, index) => {
+      const marks = getMarksByDifficulty(q.difficulty)
+      return sum + marks
+    }, 0)
     const percentage = Math.round((totalScore / maxPossibleScore) * 100)
 
-    const submission = {
-      studentDetails,
-      quizId,
-      answers,
-      questionScores,
-      queryAttempts,
-      totalScore,
-      maxPossibleScore,
-      percentage,
-      submittedAt: new Date().toISOString(),
+    // Calculate time taken in seconds
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000)
+
+    // Prepare submission data for backend
+    const submissionData = {
+      student_name: studentDetails.name,
+      student_usn: studentDetails.usn,
+      test_id: quizId,
+      total_marks: totalScore,
+      max_marks: maxPossibleScore,
+      time_taken: timeTaken
     }
 
-    const submissions = JSON.parse(localStorage.getItem("quizSubmissions") || "[]")
-    submissions.push(submission)
-    localStorage.setItem("quizSubmissions", JSON.stringify(submissions))
+    try {
+      // Send submission to backend
+      const submissionResponse = await fetch(`${BACKEND_URL}/schema/submissions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData)
+      })
 
-    sessionStorage.removeItem("studentDetails")
+      if (!submissionResponse.ok) {
+        throw new Error(`Failed to submit quiz results: ${submissionResponse.status}`)
+      }
 
-    setShowSubmitModal(false)
+      const submissionResult: SubmissionResponse = await submissionResponse.json()
 
-    const popup = document.createElement("div")
-    popup.className = "fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-in fade-in duration-300"
-    popup.innerHTML = `
-      <div class="bg-gradient-to-br from-green-900 to-green-800 p-8 rounded-xl border border-green-600 text-center animate-in zoom-in duration-500 max-w-md">
-        <div class="text-6xl mb-4">✅</div>
-        <h2 class="text-2xl font-bold text-white mb-2">Test Completed!</h2>
-        <p class="text-green-200 mb-4">Your answers have been submitted successfully.</p>
-        <div class="bg-green-800/50 rounded-lg p-4 mb-4">
-          <div class="text-3xl font-bold text-white">${percentage}%</div>
-          <div class="text-green-200 text-sm">Final Score: ${totalScore}/${maxPossibleScore} points</div>
+      // Store locally as well
+      const submission = {
+        studentDetails,
+        quizId,
+        answers,
+        questionScores,
+        queryAttempts,
+        totalScore,
+        maxPossibleScore,
+        percentage,
+        timeTaken,
+        submittedAt: new Date().toISOString(),
+        backendSubmissionId: submissionResult.submission_id,
+        backendStatus: submissionResult.status
+      }
+
+      const submissions = JSON.parse(localStorage.getItem("quizSubmissions") || "[]")
+      submissions.push(submission)
+      localStorage.setItem("quizSubmissions", JSON.stringify(submissions))
+
+      sessionStorage.removeItem("studentDetails")
+      sessionStorage.removeItem(`quiz_start_time_${quizId}`)
+      setShowSubmitModal(false)
+
+      // Show appropriate message based on backend response
+      const popupMessage = submissionResult.status === "duplicate" 
+        ? "Quiz was already submitted previously"
+        : "Your answers have been submitted successfully and stored in database!"
+
+      const popupIcon = submissionResult.status === "duplicate" ? "⚠️" : "✅"
+
+      const popup = document.createElement("div")
+      popup.className = "fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-in fade-in duration-300"
+      popup.innerHTML = `
+        <div class="bg-gradient-to-br from-green-900 to-green-800 p-8 rounded-xl border border-green-600 text-center animate-in zoom-in duration-500 max-w-md">
+          <div class="text-6xl mb-4">${popupIcon}</div>
+          <h2 class="text-2xl font-bold text-white mb-2">Test Completed!</h2>
+          <p class="text-green-200 mb-4">${popupMessage}</p>
+          <div class="bg-green-800/50 rounded-lg p-4 mb-4">
+            <div class="text-3xl font-bold text-white">${percentage}%</div>
+            <div class="text-green-200 text-sm">Final Score: ${totalScore}/${maxPossibleScore} points</div>
+            <div class="text-green-200 text-sm mt-1">Time Taken: ${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s</div>
+          </div>
+          <p class="text-green-300 text-sm">Results have been saved to database</p>
         </div>
-        <p class="text-green-300 text-sm">Results will be available in your dashboard</p>
-      </div>
-    `
+      `
 
-    document.body.appendChild(popup)
+      document.body.appendChild(popup)
 
-    setTimeout(() => {
-      popup.classList.add("animate-out", "fade-out")
       setTimeout(() => {
-        document.body.removeChild(popup)
-        router.push("/student")
-      }, 300)
-    }, 3000)
-  }, [questionScores, studentDetails, quizId, answers, queryAttempts, router])
+        popup.classList.add("animate-out", "fade-out")
+        setTimeout(() => {
+          document.body.removeChild(popup)
+          router.push("/student")
+        }, 300)
+      }, 3000)
+
+    } catch (err) {
+      console.error('Failed to submit to backend:', err)
+      
+      // Fallback: Store locally even if backend fails
+      const submission = {
+        studentDetails,
+        quizId,
+        answers,
+        questionScores,
+        queryAttempts,
+        totalScore,
+        maxPossibleScore,
+        percentage,
+        timeTaken,
+        submittedAt: new Date().toISOString(),
+        backendSubmissionId: null,
+        backendStatus: "failed",
+        error: err instanceof Error ? err.message : 'Unknown error'
+      }
+
+      const submissions = JSON.parse(localStorage.getItem("quizSubmissions") || "[]")
+      submissions.push(submission)
+      localStorage.setItem("quizSubmissions", JSON.stringify(submissions))
+
+      sessionStorage.removeItem("studentDetails")
+      sessionStorage.removeItem(`quiz_start_time_${quizId}`)
+      setShowSubmitModal(false)
+
+      // Show error popup
+      const popup = document.createElement("div")
+      popup.className = "fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-in fade-in duration-300"
+      popup.innerHTML = `
+        <div class="bg-gradient-to-br from-yellow-900 to-yellow-800 p-8 rounded-xl border border-yellow-600 text-center animate-in zoom-in duration-500 max-w-md">
+          <div class="text-6xl mb-4">⚠️</div>
+          <h2 class="text-2xl font-bold text-white mb-2">Test Completed!</h2>
+          <p class="text-yellow-200 mb-4">Results saved locally (backend unavailable)</p>
+          <div class="bg-yellow-800/50 rounded-lg p-4 mb-4">
+            <div class="text-3xl font-bold text-white">${percentage}%</div>
+            <div class="text-yellow-200 text-sm">Final Score: ${totalScore}/${maxPossibleScore} points</div>
+            <div class="text-yellow-200 text-sm mt-1">Time Taken: ${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s</div>
+          </div>
+          <p class="text-yellow-300 text-sm">Results saved offline - will sync when available</p>
+        </div>
+      `
+
+      document.body.appendChild(popup)
+
+      setTimeout(() => {
+        popup.classList.add("animate-out", "fade-out")
+        setTimeout(() => {
+          document.body.removeChild(popup)
+          router.push("/student")
+        }, 300)
+      }, 3000)
+    }
+  }, [questionScores, studentDetails, quizId, answers, queryAttempts, router, testData, startTime])
+
+  // Helper function to convert difficulty to marks - UPDATED
+  const getMarksByDifficulty = (difficulty: string): number => {
+    switch (difficulty) {
+      case 'easy': return 5
+      case 'medium': return 10
+      case 'hard': return 15
+      default: return 5
+    }
+  }
+
+  // Helper function to convert backend question to frontend format
+  const convertQuestionToFrontendFormat = useCallback((question: Question, test: TestData, index: number) => {
+    const marks = getMarksByDifficulty(question.difficulty)
+    
+    return {
+      id: question.id,
+      difficulty: question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1),
+      marks,
+      title: `Question ${index + 1}`,
+      description: question.question_text,
+      schema: {
+        tables: [
+          {
+            name: test.table_name,
+            columns: test.table_schema.map(col => ({
+              name: col.column_name,
+              type: col.data_type,
+              constraints: col.column_name === 'id' ? 'PRIMARY KEY' : ''
+            }))
+          }
+        ]
+      },
+      sampleData: {
+        [test.table_name]: test.top_rows
+      },
+      inputFormat: "Write SQL query as per question",
+      outputFormat: "Query output will be validated automatically",
+      expectedOutput: [], // Will be filled from validation response
+      starterCode: "-- Write your SQL query here\n",
+      hint: "Refer to the table schema and sample data above"
+    }
+  }, [])
 
   const handleRunQuery = useCallback(
-    (query: string) => {
-      const question = dummyQuestions[currentQuestion]
+    async (query: string) => {
+      if (!testData) return
 
+      const currentQ = testData.questions[currentQuestion]
+      
       setQueryAttempts((prev) => {
         const newAttempts = [...prev]
         newAttempts[currentQuestion] += 1
         return newAttempts
       })
 
-      const results = QueryVerifier.verifyQuery(query, question)
-
-      if (results.isCorrect && questionScores[currentQuestion] === 0) {
-        setQuestionScores((prev) => {
-          const newScores = [...prev]
-          const maxScore = question.marks
-          const attemptPenalty = Math.max(0, queryAttempts[currentQuestion] * 0.1)
-          const score = Math.max(maxScore * 0.3, maxScore * (1 - attemptPenalty))
-          newScores[currentQuestion] = Math.round(score)
-          return newScores
+      try {
+        // Send validation request to backend
+        const validationResponse = await fetch(`${BACKEND_URL}/schema/validate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            test_id: quizId,
+            question_id: currentQ.id,
+            user_sql: query
+          })
         })
-      }
 
-      setQueryResults({
-        ...results,
-        attempts: queryAttempts[currentQuestion] + 1,
-        score: questionScores[currentQuestion],
-        maxScore: question.marks,
-        hint: results.isCorrect ? null : QueryVerifier.getHint(question.id, query),
-      })
-      setShowResults(true)
+        if (!validationResponse.ok) {
+          throw new Error('Validation request failed')
+        }
+
+        const validationResult: ValidationResponse = await validationResponse.json()
+
+        // Convert array output to object format for display
+        const convertToObjectFormat = (output: any[][], isUserOutput: boolean = false) => {
+          if (!output.length) return []
+          
+          // For user output, we don't know the exact columns, so use generic names
+          // For expected output, we know it should match the question requirements
+          if (isUserOutput) {
+            // User output - create generic column names based on position
+            return output.map((row, rowIndex) => {
+              const obj: any = {}
+              row.forEach((value, colIndex) => {
+                obj[`column_${colIndex + 1}`] = value
+              })
+              return obj
+            })
+          } else {
+            // Expected output - try to infer column names from the first row
+            const firstRow = output[0]
+            return output.map((row) => {
+              const obj: any = {}
+              row.forEach((value, colIndex) => {
+                // Use generic names for expected output too
+                obj[`column_${colIndex + 1}`] = value
+              })
+              return obj
+            })
+          }
+        }
+
+        const actualOutput = convertToObjectFormat(validationResult.user_output, true)
+        const expectedOutput = convertToObjectFormat(validationResult.expected_output, false)
+
+        // Calculate score if correct - UPDATED: No attempt penalty
+        if (validationResult.is_correct && questionScores[currentQuestion] === 0) {
+          setQuestionScores((prev) => {
+            const newScores = [...prev]
+            const maxScore = getMarksByDifficulty(currentQ.difficulty)
+            // Full marks awarded regardless of attempts
+            newScores[currentQuestion] = maxScore
+            return newScores
+          })
+        }
+
+        setQueryResults({
+          isCorrect: validationResult.is_correct,
+          actualOutput,
+          expectedOutput,
+          attempts: queryAttempts[currentQuestion] + 1,
+          score: questionScores[currentQuestion],
+          maxScore: getMarksByDifficulty(currentQ.difficulty),
+          feedback: validationResult.is_correct 
+            ? "✅ Query executed successfully and matches expected output!" 
+            : "❌ Query output doesn't match expected results",
+          hint: validationResult.is_correct ? null : getHintForQuestion(currentQ, query),
+          rawOutput: {
+            user: validationResult.user_output,
+            expected: validationResult.expected_output
+          }
+        })
+        setShowResults(true)
+
+      } catch (err) {
+        setQueryResults({
+          isCorrect: false,
+          error: err instanceof Error ? err.message : 'Failed to validate query',
+          attempts: queryAttempts[currentQuestion] + 1,
+          score: questionScores[currentQuestion],
+          maxScore: getMarksByDifficulty(currentQ.difficulty),
+          feedback: "Error occurred while validating query",
+          hint: "Check your SQL syntax and make sure the table name is correct"
+        })
+        setShowResults(true)
+      }
     },
-    [currentQuestion, queryAttempts, questionScores],
+    [currentQuestion, testData, quizId, queryAttempts, questionScores],
   )
+
+  // Helper function to provide hints based on the question
+  const getHintForQuestion = (question: Question, userSql: string): string => {
+    const lowerSql = userSql.toLowerCase()
+    
+    // Check for common issues
+    if (lowerSql.includes('*') && !question.expected_sql.toLowerCase().includes('*')) {
+      return "Try selecting only the required columns instead of using SELECT *"
+    }
+    
+    if (!lowerSql.includes('where') && question.expected_sql.toLowerCase().includes('where')) {
+      return "You might need to add a WHERE clause to filter the results"
+    }
+    
+    if (!lowerSql.includes('group by') && question.expected_sql.toLowerCase().includes('group by')) {
+      return "Consider using GROUP BY for aggregation"
+    }
+    
+    if (!lowerSql.includes('join') && question.expected_sql.toLowerCase().includes('join')) {
+      return "You might need to JOIN tables together"
+    }
+    
+    return "Compare your output with the expected output and check if you're filtering or selecting the correct columns"
+  }
 
   const handleQuestionChange = useCallback((index: number) => {
     setIsTransitioning(true)
@@ -400,12 +494,56 @@ export default function QuizTestPage() {
     }, 200)
   }, [])
 
-  const currentQuestionData = useMemo(() => dummyQuestions[currentQuestion], [currentQuestion])
-  const progress = useMemo(() => ((currentQuestion + 1) / dummyQuestions.length) * 100, [currentQuestion])
-  const totalScore = useMemo(() => questionScores.reduce((sum, score) => sum + score, 0), [questionScores])
-  const maxTotalScore = useMemo(() => dummyQuestions.reduce((sum, q) => sum + q.marks, 0), [])
+  // Get current question data in frontend format
+  const currentQuestionData = useMemo(() => {
+    if (!testData) return null
+    return convertQuestionToFrontendFormat(
+      testData.questions[currentQuestion], 
+      testData.test, 
+      currentQuestion
+    )
+  }, [testData, currentQuestion, convertQuestionToFrontendFormat])
 
-  if (!studentDetails) {
+  const progress = useMemo(() => {
+    if (!testData) return 0
+    return ((currentQuestion + 1) / testData.questions.length) * 100
+  }, [currentQuestion, testData])
+
+  const totalScore = useMemo(() => questionScores.reduce((sum, score) => sum + score, 0), [questionScores])
+  
+  const maxTotalScore = useMemo(() => {
+    if (!testData) return 0
+    return testData.questions.reduce((sum, q) => sum + getMarksByDifficulty(q.difficulty), 0)
+  }, [testData])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
+        <span className="ml-3 text-white">Loading test...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center">
+        <div className="text-red-400 text-center">
+          <div className="text-xl mb-2">Error Loading Test</div>
+          <div className="text-sm text-gray-400">{error}</div>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-4"
+            variant="outline"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!studentDetails || !testData || !currentQuestionData) {
     return (
       <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
@@ -420,7 +558,7 @@ export default function QuizTestPage() {
       <div className="border-b border-[#2d2d2d] bg-[#1e1e1e] p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-white">SQL Quiz</h1>
+            <h1 className="text-xl font-bold text-white">{testData.test.name}</h1>
             <div className="text-sm text-[#d4d4d4]">
               {studentDetails?.name} • {studentDetails?.usn}
             </div>
@@ -440,10 +578,10 @@ export default function QuizTestPage() {
               </Button>
 
               <div className="text-sm text-[#d4d4d4] px-3">
-                Question {currentQuestion + 1} of {dummyQuestions.length}
+                Question {currentQuestion + 1} of {testData.questions.length}
               </div>
 
-              {currentQuestion === dummyQuestions.length - 1 ? (
+              {currentQuestion === testData.questions.length - 1 ? (
                 <Button
                   onClick={handleSubmitQuiz}
                   disabled={isTransitioning}
@@ -483,7 +621,7 @@ export default function QuizTestPage() {
               <QuestionPanel
                 question={currentQuestionData}
                 currentQuestion={currentQuestion}
-                totalQuestions={dummyQuestions.length}
+                totalQuestions={testData.questions.length}
                 answers={answers}
                 onQuestionChange={handleQuestionChange}
                 isTransitioning={isTransitioning}
@@ -560,7 +698,7 @@ export default function QuizTestPage() {
                         {/* Results Table */}
                         {queryResults?.actualOutput && (
                           <div className="bg-[#2d2d2d] rounded p-2">
-                            <div className="text-xs text-[#d4d4d4] mb-2">Output</div>
+                            <div className="text-xs text-[#d4d4d4] mb-2">Your Output</div>
                             <div className="max-h-32 overflow-auto">
                               <table className="w-full text-xs">
                                 <thead>
@@ -587,6 +725,42 @@ export default function QuizTestPage() {
                               {queryResults.actualOutput.length > 5 && (
                                 <div className="text-xs text-[#888] mt-1">
                                   ... and {queryResults.actualOutput.length - 5} more rows
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Expected Output */}
+                        {queryResults?.expectedOutput && !queryResults?.isCorrect && (
+                          <div className="bg-[#2d2d2d] rounded p-2">
+                            <div className="text-xs text-[#d4d4d4] mb-2">Expected Output</div>
+                            <div className="max-h-32 overflow-auto">
+                              <table className="w-full text-xs">
+                                <thead>
+                                  <tr className="border-b border-[#3d3d3d]">
+                                    {Object.keys(queryResults.expectedOutput[0] || {}).map((key) => (
+                                      <th key={key} className="text-left p-1 text-[#d4d4d4] text-xs">
+                                        {key}
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {queryResults.expectedOutput.slice(0, 5).map((row: any, idx: number) => (
+                                    <tr key={idx} className="border-b border-[#3d3d3d]">
+                                      {Object.values(row).map((value: any, cellIdx: number) => (
+                                        <td key={cellIdx} className="p-1 text-[#d4d4d4] text-xs">
+                                          {String(value)}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                              {queryResults.expectedOutput.length > 5 && (
+                                <div className="text-xs text-[#888] mt-1">
+                                  ... and {queryResults.expectedOutput.length - 5} more rows
                                 </div>
                               )}
                             </div>
@@ -625,6 +799,36 @@ export default function QuizTestPage() {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+
+      {/* Submit Confirmation Modal */}
+      {showSubmitModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-in fade-in duration-300">
+          <div className="bg-gradient-to-br from-blue-900 to-blue-800 p-8 rounded-xl border border-blue-600 text-center animate-in zoom-in duration-500 max-w-md">
+            <div className="text-6xl mb-4">📝</div>
+            <h2 className="text-2xl font-bold text-white mb-2">Submit Quiz?</h2>
+            <p className="text-blue-200 mb-6">Are you sure you want to submit your answers? This action cannot be undone.</p>
+            <div className="bg-blue-800/50 rounded-lg p-4 mb-6">
+              <div className="text-lg font-bold text-white">Current Score: {totalScore}/{maxTotalScore}</div>
+              <div className="text-blue-200 text-sm mt-1">Progress: {Math.round(progress)}% complete</div>
+            </div>
+            <div className="flex gap-4 justify-center">
+              <Button
+                onClick={() => setShowSubmitModal(false)}
+                variant="outline"
+                className="bg-transparent border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmSubmit}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                Confirm Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
