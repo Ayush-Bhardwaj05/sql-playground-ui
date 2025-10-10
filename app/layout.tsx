@@ -15,19 +15,29 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body
+        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} h-full flex flex-col bg-gray-900 text-white`}
+      >
         <Suspense>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <Header />
-            <main className="pt-20 pb-16">{children}</main>
-            <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {/* Header stays at top */}
+            {/* <Header /> */}
+
+            {/* Main content fills remaining space */}
+            <main className="flex-grow w-full">
+              {children}
+            </main>
+
+            {/* Footer sticks to bottom */}
+            {/* <Footer /> */}
           </ThemeProvider>
         </Suspense>
         <Analytics />
